@@ -1,0 +1,37 @@
+/*滚动元素外盒*/
+.scroll-wrap {
+    max-width: 60%;
+    display: inline-block;
+    vertical-align: top;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.scroll-item {
+    animation: scroll linear 16s alternate infinite;
+    float: left;
+}
+
+.scroll-item-hover:hover {
+    animation: scroll linear 6s alternate infinite;
+    float: left;
+}
+
+@keyframes scroll {
+    0% {
+        margin-left: 0;
+        transform: translateX(0);
+    }
+    10% {
+        margin-left: 0;
+        transform: translateX(0);
+    }
+    90% {
+        margin-left: 100%;
+        transform: translateX(-100%);
+    }
+    100% {
+        margin-left: 100%;
+        transform: translateX(-100%);
+    }
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/scroll.css">
+    <link rel="stylesheet" href="css/alert.css">
+    <link rel="stylesheet" href="css/audio_player.css">
+    <title>Audio Player</title>
+</head>
+<body id="body">
+<div class="base-alert-box"></div>
+<div class="upper-container">
+    <!-- 音乐介绍 -->
+    <div class="introduction-container">
+        <div id="text-container" class="text-container" >
+            <div class="scroll-wrap">
+                <div id="music-title">音乐</div>
+            </div>
+            <div class="author-container">作曲家：
+                <span id="author-name">未知</span>
+            </div>
+            <div class="author-container">专辑：
+                <span id="album-name">未知</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 音乐播放器主要内容 -->
+    <div class="audio-box">
+        <h3 id="lyric-title" class="lyric-title" style="opacity:0;"></h3>
+        <div id="lyric-box" class="lyric-box" style="opacity:0;pointer-events:none;">
+            <div class="lyric-calibration">
+                <img src="img/ico/up.svg" alt="-0.1" width="20">
+                <img src="img/ico/deletion.svg" alt="" width="20">
+                <img src="img/ico/down.svg" alt="+0.1" width="20">
+                <span id="lyric-offset"></span>
+            </div>
+            <ul id="lyric-ul">
+                <li>加载歌词中 . . .</li>
+            </ul>
+        </div>
+
+        <div class="audio-container">
+            <!-- 进度条 -->
+            <div class="a-progress">
+                <div class="pgs-total" id="progress-total">
+                    <div class="pgs-loading" id="progress-loading"></div>
+                    <div class="pgs-play" id="progress" style="width:0;"></div>
+                </div>
+            </div>
+            <!-- 下排控制按钮 -->
+            <div class="a-controls">
+                <!-- 播放时长 -->
+                <div class="time-container">
+                    <span class="played-time" id="playedTime">00:00</span>&nbsp;/&nbsp;
+                    <span class="audio-time" id="audioTime">00:00</span>
+                </div>
+                <!-- 中间按钮 -->
+                <div id="cb-container" class="center-button-container">
+                    <!-- 显示歌词 -->
+                    <div id="lyric" class="center-icon lyric"></div>
+                    <!-- 播放模式 -->
+                    <img id="playMode" class="center-icon mode" src="img/ico/play_mode_0.svg" alt="" width="30">
+                    <!-- 上一首 -->
+                    <div id="skipForward" class="center-icon s-right"></div>
+                    <!-- 暂停按钮 -->
+                    <div id="playPause" class="center-icon icon-play"></div>
+                    <!-- 下一首 -->
+                    <div id="skipBackward" class="center-icon s-left"></div>
+                    <!-- 音量调节 -->
+                    <div id="volume" class="center-icon volume"></div>
+                    <!-- 音量悬浮窗 -->
+                    <label for="volume-toggle"></label>
+                    <input type="range" id="volume-toggle" name="change" value="50" min="0" max="100" step="1">
+                </div>
+                <!-- 后部按钮 -->
+                <div class="bottom-button-container">
+                    <!-- 列表 -->
+                    <div id="list" class="bottom-icon list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音乐列表 -->
+    <div class="close-list" id="close-list"></div>
+    <div class="music-list" id="music-list">
+        <div id="music-list-container" class="music-list-container">
+            <img id="search-ico" class="search" src="img/ico/search.svg" alt="">
+            <label>
+                <input
+                        id="search-input" class="search-bar"
+                        type="search" placeholder="搜索 曲名,作曲家,专辑" style="opacity:0">
+            </label>
+            <div class="music-list-title">播放队列</div>
+            <hr class="line">
+            <ul class="all-list" id="all-list"></ul>
+            <img id="loading" src="img/ico/loading.svg" width="20" alt="">
+        </div>
+    </div>
+<audio id="audio-player" preload="metadata"></audio>
+<img id="pre-load" src="" alt="" decoding="async" style="display:none;">
+</body>
+<script type="module" src="js/audio_player_listener.js"></script>
+</html>
