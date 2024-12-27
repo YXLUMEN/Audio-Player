@@ -14,13 +14,12 @@ export default async function baseFetch(url, opts = {}) {
         },
         referrer: "about:client",
         cache: 'default',
-        async: false,
         ignore_err: [],
         ...opts
     };
+    if (defaultOpts.method === 'GET') defaultOpts.body = null;
 
     const response_promise = fetch(url, defaultOpts);
-    if (defaultOpts.async) return response_promise;
 
     const response = await response_promise;
     const status = response.status;
@@ -31,20 +30,13 @@ export default async function baseFetch(url, opts = {}) {
 
 /**
  * 获取URL中的Get信息
- * @param {string} par
+ * @param {string} param
+ * @return {string}
  * */
-export function getPar(par) {
-    const localUrl = document.location.href;
-    const paramIndex = localUrl.indexOf(`${par}=`);
-
-    if (paramIndex === -1) return '';
-
-    let paramValue = localUrl.slice(paramIndex + par.length + 1);
-    const nextParamIndex = paramValue.indexOf("&");
-
-    if (nextParamIndex !== -1) paramValue = paramValue.slice(0, nextParamIndex);
-
-    return paramValue;
+export function getPar(param) {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get(param) || '';
 }
 
 

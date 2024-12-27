@@ -1,0 +1,224 @@
+/* 按钮 */
+.base-button {
+    margin: 10px auto;
+    min-width: 80px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    background: #dcdcdc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.base-button:hover {
+    opacity: .7;
+}
+
+.base-button:active {
+    opacity: .9;
+}
+
+.base-button-style-2 {
+    width: 150px;
+    padding: 10px;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 300ms ease, box-shadow 300ms ease;
+}
+
+.base-button-style-2:hover {
+    background-color: #16a085;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 输入框 */
+.base-input {
+    background: rgba(243, 243, 243, .6);
+    padding: 5px;
+    border: #8c8c8c solid 2px;
+    border-radius: 4px;
+}
+
+.base-input:focus {
+    outline: none;
+}
+
+.base-input-style-2 {
+    width: 300px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.base-input-style-2:focus {
+    border-color: #1abc9c;
+    box-shadow: 0 0 8px rgba(26, 188, 156, 0.2);
+    outline: none;
+}
+
+/* 分割线 */
+.base-line {
+    width: 80%;
+    margin: 10px 0;
+    border-bottom: 1px solid #595959;
+}
+
+/* 浮底按钮 */
+.base-bottom-float {
+    position: fixed;
+    display: flex;
+    bottom: 10%;
+    padding: 10px 20px;
+    background: #e2e2e2;
+    border-radius: 4px;
+}
+
+/* 开关 */
+.base-switch {
+    p {
+        height: 100%;
+        width: 80%;
+    }
+
+    label {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 25px;
+    }
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 400ms;
+        border-radius: 25px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 21px;
+        width: 21px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: 400ms;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #1abc9c; /* #9c9c9c */
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(25px);
+    }
+}
+
+/* 单选框 */
+.base-checkbox {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 35px 0 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.base-checkbox {
+    input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #eee;
+        border-radius: 3px;
+        transform: translateY(-50%);
+        transition: background-color 300ms ease; /* 添加背景颜色变化的动画 */
+    }
+
+    input:checked ~ .checkmark {
+        background-color: #1abc9c;
+    }
+
+    .checkmark:after {
+        content: '';
+        position: absolute;
+        display: none;
+        transition: opacity 300ms ease, transform 0.3s ease; /* 添加透明度和旋转的动画 */
+    }
+
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+}
+
+/* 文件输入框 */
+.base-file-input {
+    display: none;
+}
+
+.base-file-input-label {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 300ms ease;
+}
+
+.base-file-input-label:hover {
+    background-color: #16a085;
+}
+
+/* 置顶长进度条 */
+.base-progress-bar {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    height: 5px;
+    background: #8ac0ff;
+    pointer-events: none;
+    transition: 200ms ease-out;
+}

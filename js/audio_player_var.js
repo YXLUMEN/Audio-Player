@@ -1,3 +1,5 @@
+import SpectrumDiagram from "./SpectrumDiagram.js";
+
 /**
  * 获取主题背景
  * @type {HTMLBodyElement}
@@ -127,6 +129,19 @@ export const AudioList = document.getElementById('music-list');
  * @type {HTMLUListElement}
  * */
 export const ListParentUl = document.getElementById('all-list');
+/**
+ * @type {HTMLDivElement}
+ * */
+export const MoreSelectionsContainer = document.getElementById('unique-selections-container');
+/**
+ * @type {HTMLCollectionOf<Element>}
+ * */
+export const MoreSelections = document.getElementsByClassName('more-selections');
+/**
+ * @type {SpectrumDiagram}
+ * */
+export const DSD = new SpectrumDiagram(
+    document.getElementById('audio-canvas'), window.innerWidth, 400);
 
 /**
  * 音频播放时间换算
@@ -154,13 +169,17 @@ export function updatePlayingProgress(current = AudioEle.currentTime) {
 export function pauseToggle() {
     if (AudioEle.paused) AudioEle.play()
         .then(() => {
+            DSD.audioContext?.resume().catch();
             Pause.classList.remove('icon-play');
             Pause.classList.add('icon-pause');
         })
         .catch(err => {
             console.error('Error playing audio:', err);
         });
-    else AudioEle.pause();
+    else {
+        AudioEle.pause();
+        DSD.audioContext?.suspend().catch();
+    }
 }
 
 /**
@@ -183,4 +202,50 @@ export function setMuted() {
         AudioEle.muted = true;
         Volume.style.backgroundImage = "url('/static/img/audio/ico/mute.svg')";
         }
+}
+
+export function toggleDraw(e) {
+    if (e.target.checked) {
+        DSD.startDraw();
+        DSD.canvas.style.display = 'block';
+    } else {
+        DSD.stopDraw();
+        DSD.canvas.style.display = 'none';
+    }
+}
+
+export function switchDrawMode() {
+    DSD.stopDraw();
+    requestAnimationFrame(() => {
+        const selectedRadio = document.querySelector('input[name="draw-mode"]:checked');
+        if (selectedRadio) DSD.startDraw(selectedRadio.value)
+    });
+}
+
+export function changeFFTSize() {
+    const value = document.querySelector('input[name="change-fftSize"]').value;
+    const n = value === '' ? 256 : Number(value);
+    if (isNaN(n) || n < 32 || n > 32768 || (n & (n - 1)) !== 0) {
+        alert('必须为2的次方并且满足[32,32768]');
+        return false;
+    }
+    DSD.setAnalyser({fftSize: n});
+}
+
+export function changeDrawInterval() {
+    const value = document.querySelector('input[name="change-draw-interval"]').value;
+    const n = value === '' ? 10 : Number(value);
+    if (isNaN(n)) return;
+    DSD.drawInterval = n;
+}
+
+export function changeDecibels() {
+    const minV = document.querySelector('input[name="min-decibels"]').value;
+    const maxV = document.querySelector('input[name="max-decibels"]').value;
+    const [min, max] = [minV === '' ? -100 : Number(minV), maxV === '' ? -10 : Number(maxV)];
+    if (isNaN(min) || isNaN(max) || min >= max) return;
+    DSD.setAnalyser({
+        minDecibels: min,
+        maxDecibels: max,
+    });
 }

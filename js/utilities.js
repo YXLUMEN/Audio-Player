@@ -44,29 +44,33 @@ export function isEmpty(obj) {
 
 /**
  * 触屏端滑动方向
- * @param {number} startX
- * @param {number} startY
- * @param {number} endX
- * @param {number} endY
- * @return {number} number -1: unknown, 0: click, 1: left, 2: right, 3: up, 4: down
+ * @param {number} startX - Starting X coordinate
+ * @param {number} startY - Starting Y coordinate
+ * @param {number} endX - Ending X coordinate
+ * @param {number} endY - Ending Y coordinate
+ * @param {number} threshold=2 - Minimum distance threshold for movement
+ * @returns {number} Direction code: 0(click), 1(left), 2(right), 3(up), 4(down), -1(click)
  * */
-export function getSlideDirection(startX, startY, endX, endY) {
-    const angX = endX - startX;
-    const angY = endY - startY;
+export function getSlideDirection(startX, startY, endX, endY, threshold = 2) {
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+
+    const distanceSquared = deltaX ** 2 + deltaY ** 2;
+    if (distanceSquared < threshold) return 0;
 
     // click
-    if (Math.abs(angX) < 2 && Math.abs(angY) < 2) return 0;
+    if (Math.abs(deltaX) < 2 && Math.abs(deltaY) < 2) return 0;
 
-    const angle = Math.atan2(angX, angY) * 180 / Math.PI;
-    // left
-    if (angle >= -135 && angle <= -45) return 1;
-    // right
-    if (angle > 45 && angle < 135) return 2;
-    // up
-    if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) return 3
-    // down
-    if (angle >= -45 && angle <= 45) return 4;
-    return -1;
+    // 180/PI ≈ 57.29577951308232
+    const angle = Math.atan2(deltaX, deltaY) * 57.29577951308232;
+
+    if (angle <= -45) {
+        return (angle >= -135) ? 1 : 3; // left: up
+    }
+    if (angle >= 45) {
+        return (angle <= 135) ? 2 : 3; // right: up
+    }
+    return 4; // down
 }
 
 /**
@@ -83,14 +87,19 @@ export function shuffleArray(array) {
 }
 
 /**
- * 生成随机数组; 使用Fisher-Yates算法; 未来可能会针对大数进行优化,如使用Promise.
- * @param {number} max 最大值
- * @param {number} count 默认为 max - min
+ * 生成随机数组; 使用Fisher-Yates算法; 未来可能会针对大数进行优化, 如使用Promise.
+ * @param {number} max Maximum value (exclusive)
+ * @param {number} count Number of values to generate (defaults to max)
  * @return {number[]}
+ * @throws {RangeError} If count is less than one or greater than max
  * */
 export function generateUniqueRandomNumbers(max, count = max) {
-    if (count < 1) throw RangeError('Count must lager then 1');
-    if (count > max) throw RangeError('Count must smaller then max');
+    if (!Number.isInteger(max) || !Number.isInteger(count)) {
+        throw new TypeError('Parameters must be integers');
+    }
+    if (max < 0) throw new RangeError('Max must be non-negative');
+    if (count < 1) throw new RangeError('Count must be larger than 1');
+    if (count > max) throw new RangeError(`Count (${count}) cannot exceed max value (${max})`);
 
     const allNumbers = Array.from({length: max}, (_, i) => i);
     return shuffleArray(allNumbers).slice(0, count);

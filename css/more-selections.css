@@ -1,0 +1,93 @@
+.base-more-selections-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 10px;
+    width: 300px;
+    height: 90%;
+    border-radius: 0 0 8px 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(15px);
+    background: rgba(133, 133, 133, 0.5);
+}
+
+/* 第二父级 */
+.base-more-selections-container {
+    .more-selections {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 基础子元素 */
+
+    .selection-item {
+        display: flex;
+        align-items: center;
+        text-align: left;
+        color: white;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    /* 普通选项 */
+
+    .selection {
+        cursor: pointer;
+        transition: 100ms;
+    }
+
+    .selection:hover {
+        opacity: 0.7;
+        background: rgba(177, 177, 177, 0.5);
+    }
+
+    /* 次级菜单 */
+
+    .submenu-title {
+        font-weight: 700;
+    }
+
+    .submenu-content {
+        margin: 0 0 0 10px;
+    }
+
+    &.show-container {
+        animation: showSelections 500ms forwards;
+    }
+
+    &.hide-container {
+        animation: hideSelections 500ms forwards;
+    }
+}
+
+.base-more-selections-container .set-column {
+    flex-direction: column;
+    align-items: flex-start;
+
+    & > * {
+        margin: 10px 0 0 0;
+    }
+}
+
+@keyframes hideSelections {
+    from {
+        transform: translateY(0%);
+    }
+
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes showSelections {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0%);
+    }
+}

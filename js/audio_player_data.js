@@ -1,7 +1,7 @@
 import * as v from "./audio_player_var.js";
-import baseFetch, {getPar} from "post_methods.js";
-import {debounce, isEmpty} from "utilities.js";
-import createAlert from "page.js";
+import baseFetch, {getPar} from "./post_methods.js";
+import {debounce, isEmpty} from "./utilities.js";
+import createAlert from "./page.js";
 
 /**
  * 存储当前播放的音乐序号,优先从地址栏获取,其次是本地存储
@@ -34,7 +34,7 @@ let AUDIO_OBJECT = Object.create(null);
  * 用于记录本地保存音频序号极值
  * @type {number[],null}
  * */
-let AUDIO_INDEX_RANGE = [];
+let AUDIO_INDEX_SECTION = [];
 
 let MAX_AUDIO_COUNT = 0;
 
@@ -81,11 +81,70 @@ async function updateData(opts = {}) {
     // 显示加载图标
     v.LoadingIco.style.display = 'block';
 
+    /*
+    注意,需要实现!
     // 后台获取
-    const response = await baseFetch('/audio/audio_lists', {
+    const response = await baseFetch('/audio_lists', {
         body: JSON.stringify(POST_DATA)
     });
     const json = await response.json();
+    */
+    // 示例
+    const json = {
+        "audio_dict": {
+            "0": [
+                "",
+                "fasterthanlight_bonus_featuringmiastegmar",
+                "",
+                "flac",
+                ""
+            ],
+            "1": [
+                "Dyson_Sphere_Program",
+                "Dyson Sphere Program Theme",
+                "Dyson_Sphere_Program_Soundtrack",
+                "flac",
+                ""
+            ],
+            "2": [
+                "Dyson_Sphere_Program",
+                "Everywhere_is_Nowhere",
+                "Dyson_Sphere_Program_Soundtrack",
+                "flac",
+                ""
+            ],
+            "3": [
+                "Dyson_Sphere_Program",
+                "Set_Sail",
+                "Dyson_Sphere_Program_Soundtrack",
+                "flac",
+                ""
+            ],
+            "4": [
+                "Elecrystal电晶音乐",
+                "Auroral",
+                "Dyson_Sphere_Program_Soundtrack",
+                "flac",
+                ""
+            ],
+            "5": [
+                "Elecrystal电晶音乐",
+                "Electron Cell",
+                "Dyson_Sphere_Program_Soundtrack",
+                "flac",
+                ""
+            ],
+            "6": [
+                "陈奕迅",
+                "孤独患者",
+                "?",
+                "ogg",
+                ""
+            ]
+        },
+        "item_counts": 7,
+        "status": 1009
+    }
 
     if (!json) {
         POST_DATA['audio_index'] = AUDIO_INDEX;
@@ -105,17 +164,17 @@ async function updateData(opts = {}) {
 
     MAX_AUDIO_COUNT = Number(json['item_counts']);
 
-    if (AUDIO_INDEX_RANGE) {
-        const tempArray = Object.keys(AUDIO_OBJECT);
-        AUDIO_INDEX_RANGE = tempArray.length === MAX_AUDIO_COUNT ? null : [Number(tempArray[0]), Number(tempArray.pop())];
-        if (AUDIO_INDEX >= MAX_AUDIO_COUNT) AUDIO_INDEX = AUDIO_INDEX_RANGE[1];
+    if (AUDIO_INDEX_SECTION) {
+        const audioMapKeys = Object.keys(AUDIO_OBJECT);
+        AUDIO_INDEX_SECTION = audioMapKeys.length === MAX_AUDIO_COUNT ? null : [Number(audioMapKeys[0]), Number(audioMapKeys.pop())];
+        if (AUDIO_INDEX >= MAX_AUDIO_COUNT) AUDIO_INDEX = AUDIO_INDEX_SECTION[1];
     }
 
-    createChildLi(AUDIO_OBJECT).catch();
+    updateAudioList(AUDIO_OBJECT).catch();
 }
 
 // 背景图片数量
-const ALL_IMG_COUNT = 29;
+const ALL_IMG_COUNT = 4;
 
 let NEW_IMG_URL = '';
 let IMG_INDEX = 0;
@@ -123,9 +182,9 @@ let IMG_INDEX = 0;
 /**
  * @type {HTMLImageElement}
  * */
-const TempImgEle = document.getElementById('pre-load');
+const PreLoadBackImgEle = document.getElementById('pre-load');
 
-TempImgEle.addEventListener('load', () => v.Body.style.backgroundImage = `url('${NEW_IMG_URL}')`);
+PreLoadBackImgEle.addEventListener('load', () => v.Body.style.backgroundImage = `url('${NEW_IMG_URL}')`);
 
 // 加载音乐数据
 function initAudio() {
@@ -136,11 +195,11 @@ function initAudio() {
     v.ProgressLoading.style.display = 'block';
 
     // 设置背景图片
-    NEW_IMG_URL = `/static/img/audio/webp/audio-${IMG_INDEX}.webp`;
+    NEW_IMG_URL = `/img/webp/audio-${IMG_INDEX}.webp`;
     IMG_INDEX = (IMG_INDEX + 1) % ALL_IMG_COUNT;
 
     // 预加载图片
-    TempImgEle.src = NEW_IMG_URL;
+    PreLoadBackImgEle.src = NEW_IMG_URL;
 
     // 设置音频信息
     ;[v.Author.textContent, v.AudioTitle.textContent, v.Album.textContent] = [...AUDIO_OBJECT[AUDIO_INDEX]];
@@ -158,7 +217,7 @@ function initAudio() {
     history.replaceState(null, '', href.href);
 
     // 设置音乐, 并在加载后播放
-    v.AudioEle.src = `/audio/play/${AUDIO_OBJECT[AUDIO_INDEX][4]}`;
+    v.AudioEle.src = `/play/${AUDIO_OBJECT[AUDIO_INDEX][4]}`; // 可以用本地文件替代
     v.AudioEle.load();
 }
 
@@ -227,39 +286,39 @@ function highlightChosenSelection(scroll = true) {
     const selectedElement = document.getElementById(`li-${AUDIO_INDEX}`);
     if (!selectedElement) return;
 
-    const activeElements = document.getElementsByClassName('all-list-li-activate');
-    for (let element of activeElements) {
-        element.classList.remove('all-list-li-activate');
-    }
+    const activeElements = v.AudioList.getElementsByClassName('all-list-li-activate');
+    for (let element of activeElements) element.classList.remove('all-list-li-activate');
 
-    if (scroll) {
-        v.ListParentUl.scrollTo({top: selectedElement.offsetTop - 150, behavior: 'smooth'});
-    }
+    if (scroll) v.ListParentUl.scrollTo({top: selectedElement.offsetTop - 150, behavior: 'smooth'});
+
     selectedElement.classList.add('all-list-li-activate');
 }
 
 
 /**
  * 创建音乐列表
- * @param {Object} obj 标准音频列表格式
+ * @param {Object} newData 标准音频列表格式
  * */
-async function createChildLi(obj) {
+async function updateAudioList(newData) {
     if (v.ListParentUl.children.length === MAX_AUDIO_COUNT) return;
 
-    if (isEmpty(obj)) {
+    if (isEmpty(newData)) {
         v.ListParentUl.textContent = '无结果';
         return;
     }
+
+    const scrollTop = v.ListParentUl.scrollTop;
+    const scrollHeight = v.ListParentUl.scrollHeight;
 
     const frag = document.createDocumentFragment();
 
     const paragraph = (value) => {
         const p = document.createElement('p');
-        p.textContent = `${value[0]} - ${value[1]} - ${value[2]}.${value[3]}`;
+        p.textContent = p.title = `${value[0]} - ${value[1]} - ${value[2]}.${value[3]}`;
         return p;
     };
 
-    const entries = Object.entries(obj);
+    const entries = Object.entries(newData);
     const len = entries.length;
     let index = 0;
 
@@ -278,8 +337,12 @@ async function createChildLi(obj) {
             requestAnimationFrame(updateBatch);
             return;
         }
+
         v.ListParentUl.textContent = '';
         v.ListParentUl.appendChild(frag);
+        if (v.ListParentUl.scrollTop < ScrollUConfig.threshold) {
+            v.ListParentUl.scrollTop = scrollTop + (v.ListParentUl.scrollHeight - scrollHeight);
+        }
         highlightChosenSelection(false);
     };
     requestAnimationFrame(updateBatch);
@@ -297,48 +360,47 @@ const ScrollUConfig = (() => {
 })();
 
 const slideToUpdateFn = debounce(() => {
-    if (!AUDIO_INDEX_RANGE) return;
+    if (!AUDIO_INDEX_SECTION) return;
 
-    const scrollTop = v.ListParentUl.scrollTop;
-    const clientHeight = v.ListParentUl.offsetHeight;
-    const scrollHeight = v.ListParentUl.scrollHeight;
+    const [first, last] = AUDIO_INDEX_SECTION;
+
+    if (last + 1 >= MAX_AUDIO_COUNT && first - 1 < 0) return;
+
+    const {scrollTop, offsetHeight: clientHeight, scrollHeight} = v.ListParentUl;
+    const {threshold, beforeScrollTop} = ScrollUConfig;
 
     // 判断滚动方向
-    const directionDown = ScrollUConfig.beforeScrollTop <= scrollTop;
-
+    const directionDown = beforeScrollTop <= scrollTop;
     ScrollUConfig.beforeScrollTop = scrollTop;
-
-    const [first, last] = AUDIO_INDEX_RANGE;
-
-    const shouldUpdateDown = directionDown &&
-        (scrollTop + clientHeight + ScrollUConfig.threshold >= scrollHeight) &&
-        (last + 1 < MAX_AUDIO_COUNT);
-
-    const shouldUpdateUp = scrollTop <= ScrollUConfig.threshold && first - 1 >= 0;
-
-    if (shouldUpdateDown) switchAudio(last + 1, {refresh: false, scroll: false});
-    else if (shouldUpdateUp) switchAudio(first - 1, {refresh: false, scroll: false});
+    if (directionDown && last + 1 < MAX_AUDIO_COUNT) {
+        if (scrollTop + clientHeight + threshold >= scrollHeight) {
+            switchAudio(last + 1, {refresh: false, scroll: false});
+        }
+    } else if (scrollTop <= threshold && first - 1 >= 0) {
+        switchAudio(first - 1, {refresh: false, scroll: false});
+    }
 }, 100);
 
 const wheelingToUpdateFn = debounce((event) => {
-    if (!AUDIO_INDEX_RANGE) return;
+    if (!AUDIO_INDEX_SECTION) return;
+    const [first, last] = AUDIO_INDEX_SECTION;
 
-    const scrollTop = v.ListParentUl.scrollTop;
-    const clientHeight = v.ListParentUl.offsetHeight;
-    const scrollHeight = v.ListParentUl.scrollHeight;
+    if (last + 1 >= MAX_AUDIO_COUNT && first - 1 < 0) return;
 
+    const {scrollTop, offsetHeight, scrollHeight} = v.ListParentUl;
     const directionDown = event.deltaY > 0;
 
-    const [first, last] = AUDIO_INDEX_RANGE;
-
-    const shouldUpdateDown = directionDown && last + 1 < MAX_AUDIO_COUNT && scrollTop + clientHeight + 20 >= scrollHeight;
-    const shouldUpdateUp = !directionDown && first - 1 >= 0 && scrollTop === 0;
-
-    if (shouldUpdateDown) switchAudio(last + 1, {refresh: false, scroll: false});
-    else if (shouldUpdateUp) switchAudio(first - 1, {refresh: false, scroll: false});
+    if (directionDown) {
+        if (last + 1 < MAX_AUDIO_COUNT &&
+            scrollTop + offsetHeight + ScrollUConfig.threshold >= scrollHeight) {
+            switchAudio(last + 1, {refresh: false, scroll: false});
+        }
+    } else if (first - 1 >= 0 && scrollTop === 0) {
+        switchAudio(first - 1, {refresh: false, scroll: false});
+    }
 }, 200);
 
-// Enter 搜索激活
+// Enter 搜索激活 不再维护
 const activeSearchFn = debounce((event) => {
     if (event.key !== 'Enter') return;
     const searchStr = v.SearchInputBar.value;
@@ -361,13 +423,17 @@ const activeSearchFn = debounce((event) => {
 
     if (Object.keys(filteredResults).length > 1) {
         v.ListParentUl.textContent = '';
-        createChildLi(filteredResults).catch();
+        updateAudioList(filteredResults).catch();
         return;
     }
 
     AUDIO_OBJECT = Object.create(null);
     updateData({init: true}).catch();
 }, 500);
+
+const DEFAULT_LYRIC = {
+    lyric: [{text: "暂无歌词", time: 0.0}]
+};
 
 /**
  * 获取歌词
@@ -380,23 +446,23 @@ const activeSearchFn = debounce((event) => {
  *      }
  * */
 const fetchLyricFn = debounce(async () => {
-    const response = await baseFetch('/audio/lyrics', {
-        body: JSON.stringify({
-            'audio_lyrics': true,
-            'audio_hash': AUDIO_OBJECT[AUDIO_INDEX][4]
-        }),
-        ignore_err: [404]
-    });
-
-    let json;
     try {
-        json = await response.json();
-    } catch (err) {
-        json = {"lyric": [{"text": "暂无歌词", "time": 0.0}]};
-    }
+        const response = await baseFetch('/lyrics', {
+            body: JSON.stringify({
+                'audio_lyrics': true,
+                'audio_hash': AUDIO_OBJECT[AUDIO_INDEX][4]
+            }),
+            ignore_err: [404]
+        });
 
-    formatLyrics(json);
-    highlightLine();
+        const json = await response.json();
+        formatLyrics(json);
+    } catch (err) {
+        formatLyrics(DEFAULT_LYRIC);
+        console.warn('Failed to fetch lyrics:', err);
+    } finally {
+        highlightLine();
+    }
 }, 3000);
 
 const LYRIC_ACTIONS = (() => {
@@ -446,27 +512,32 @@ function formatLyrics(lyrics) {
 
 // 重置滚动
 function resetLyricPos() {
-    const highLighted = document.querySelector('.highlight-line');
-    highLighted?.removeAttribute('class');
+    const highLighted = v.LyricUl.querySelectorAll('.highlight-line');
+    highLighted.forEach(line => line?.removeAttribute('class'));
     v.LyricUl.style.transform = 'translateY(0)';
     LYRIC_ACTIONS.currentLine = 0;
 }
 
 // 高亮当前播放行
 function highlightLine() {
-    const childLi = v.LyricUl.getElementsByTagName('li');
+    const childLi = v.LyricUl.children;
     if (childLi.length <= 1) return;
 
     const {currentLine, centralPos, syncLyricEnable, lineOffset} = LYRIC_ACTIONS;
+    const NEAR_LINE_COUNT = 4;
 
     if (currentLine > 0) {
-        childLi[currentLine - 1].className = 'near-line';
-        if (childLi[currentLine - 3]) childLi[currentLine - 3].classList.remove('near-line');
+        const prevElement = childLi[currentLine - 1];
+        if (prevElement) prevElement.className = 'near-line';
 
-        for (let i = 4; i--;) {
-            const liElement = childLi[currentLine + i];
-            if (!liElement) break;
-            liElement.classList.add('near-line');
+        // Remove 'near-line' from element 3 lines above
+        childLi[currentLine - 3]?.classList.remove('near-line');
+
+        // Add 'near-line' to the next few lines more efficiently
+        for (let i = NEAR_LINE_COUNT; i--;) {
+            const nextElement = childLi[currentLine + i];
+            if (!nextElement) break;
+            nextElement.classList.add('near-line');
         }
     }
 
@@ -481,17 +552,18 @@ function highlightLine() {
 function syncLyric() {
     const {currentLine, lyrArray, lyricOffset} = LYRIC_ACTIONS;
 
-    if (currentLine === lyrArray.length || lyrArray.length <= 1) return;
+    if (currentLine >= lyrArray.length || lyrArray.length <= 1) return;
 
     const currentTime = v.AudioEle.currentTime;
+    const adjustedCurrentTime = currentTime + lyricOffset;
     const lyrTime = Number(lyrArray[currentLine].time);
 
-    if (lyrTime * 3 <= currentTime + lyricOffset) {
+    if (lyrTime * 3 <= adjustedCurrentTime) {
         significantLeapFn();
         return;
     }
 
-    if (lyrTime <= currentTime + lyricOffset) {
+    if (lyrTime <= adjustedCurrentTime) {
         highlightLine();
         LYRIC_ACTIONS.currentLine += 1;
     }
@@ -499,32 +571,39 @@ function syncLyric() {
 
 // 跨度较大时快速跳转歌词
 const significantLeapFn = debounce(() => {
-    const {lyrArray, currentLine, centralPos} = LYRIC_ACTIONS;
+    const {lyrArray, currentLine, centralPos, syncLyricEnable} = LYRIC_ACTIONS;
     const length = lyrArray.length;
     if (length <= 1) return;
 
     const currentTime = v.AudioEle.currentTime;
     const liElements = v.LyricUl.children;
+    const LOOK_AHEAD = 4;
 
     if (liElements) {
-        const startLine = Math.max(currentLine - 4, 0);
-        const endLine = Math.min(currentLine + 4, length);
+        const startLine = Math.max(currentLine - LOOK_AHEAD, 0);
+        const endLine = Math.min(currentLine + LOOK_AHEAD, length);
         for (let i = startLine; i < endLine; i++) {
             liElements.item(i)?.classList.remove('highlight-line', 'near-line');
         }
     }
 
-    if (lyrArray[1].time >= currentTime) {
-        if (LYRIC_ACTIONS.syncLyricEnable) v.LyricUl.style.transform = 'translateY(0)';
+    if (lyrArray[1]?.time >= currentTime) {
+        if (syncLyricEnable) v.LyricUl.style.transform = 'translateY(0)';
         LYRIC_ACTIONS.currentLine = 0;
         highlightLine();
         return;
     }
 
     for (let i = 0; i < length; i++) {
-        if (lyrArray[i].time <= currentTime && (i === length - 1 || lyrArray[i + 1].time > currentTime)) {
+        const isLastLyric = i === length - 1;
+        const currentLyricTime = lyrArray[i].time;
+        const nextLyricTime = isLastLyric ? Infinity : lyrArray[i + 1].time;
+
+        if (currentLyricTime <= currentTime && currentTime < nextLyricTime) {
             LYRIC_ACTIONS.currentLine = i;
-            if (LYRIC_ACTIONS.syncLyricEnable && i < centralPos * 2) v.LyricUl.style.transform = 'translateY(0)';
+            if (syncLyricEnable && i < centralPos * 2) {
+                v.LyricUl.style.transform = 'translateY(0)';
+            }
             break;
         }
     }

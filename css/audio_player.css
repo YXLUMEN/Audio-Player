@@ -18,9 +18,23 @@ body {
     overflow: hidden;
 }
 
+#body.show-lyric {
+    backdrop-filter: brightness(.5) blur(40px);
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
 .upper-container {
     width: 80%;
     height: 80%;
+}
+
+.mobile-lyric {
+    position: absolute;
+    padding: 10px;
+    display: none;
 }
 
 .introduction-container {
@@ -35,6 +49,31 @@ body {
 .text-container {
     width: 80%;
     transition: 200ms;
+}
+
+.text-container {
+    &.show {
+        opacity: 1;
+        pointer-events: initial;
+        display: block
+    }
+
+    &.hide {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.base-more-selections-container {
+    z-index: 9;
+}
+
+.more {
+    position: absolute;
+    right: 0;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
 }
 
 .scroll-wrap {
@@ -66,6 +105,16 @@ body {
     transition: 200ms;
 }
 
+.lyric-title {
+    &.show {
+        opacity: 1;
+    }
+
+    &.hide {
+        opacity: 0;
+    }
+}
+
 .lyric-box {
     display: none;
     position: absolute;
@@ -81,41 +130,54 @@ body {
 }
 
 /* 直接使用class定位到ul似乎会导致列表样式概率消失 */
-.lyric-box ul {
-    padding: 0;
-    position: relative;
-    top: 40%;
-    list-style: none;
-    text-align: center;
-    user-select: none;
-    -webkit-user-select: none;
-    transition-duration: 600ms;
-}
+.lyric-box {
+    &.show {
+        opacity: 1;
+        pointer-events: initial;
+        display: block;
+    }
 
-.lyric-box ul li {
-    height: 25px;
-    line-height: 25px;
-    margin-top: 25px;
-    transition: 200ms;
-    opacity: .4;
-}
+    &.hide {
+        opacity: 0;
+        pointer-events: initial;
+    }
 
-.lyric-box ul li span {
-    cursor: pointer;
-}
+    ul {
+        padding: 0;
+        position: relative;
+        top: 40%;
+        list-style: none;
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+        transition-duration: 600ms;
+    }
 
-.lyric-box ul li span span {
-    font-size: 12px;
-    pointer-events: none;
-}
+    ul li {
+        height: 25px;
+        line-height: 25px;
+        margin-top: 25px;
+        transition: 200ms;
+        opacity: .4;
+    }
 
-.lyric-box ul .highlight-line {
-    color: #17E883;
-    opacity: 1;
-}
+    ul li span {
+        cursor: pointer;
+    }
 
-.lyric-box ul .near-line {
-    opacity: 1;
+    ul li span span {
+        font-size: 12px;
+        pointer-events: none;
+    }
+
+    ul .highlight-line {
+        color: #17E883;
+        opacity: 1;
+    }
+
+    ul .near-line {
+        opacity: 1;
+    }
 }
 
 /* 歌词调整 */
@@ -182,49 +244,51 @@ body {
     touch-action: none;
 }
 
-.a-progress .pgs-total:after,
-.a-progress .pgs-total .pgs-loading,
-.a-progress .pgs-total .pgs-play:before,
-.a-progress .pgs-total .pgs-play:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 7px;
-    bottom: 7px;
-}
+.a-progress {
+    .pgs-total:after,
+    .pgs-total .pgs-loading,
+    .pgs-total .pgs-play:before,
+    .pgs-total .pgs-play:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 7px;
+        bottom: 7px;
+    }
 
-.a-progress .pgs-total:after {
-    background-color: #bbbbbb;
-    border-radius: 10px;
-    z-index: -1;
-}
+    .pgs-total:after {
+        background-color: #bbbbbb;
+        border-radius: 10px;
+        z-index: -1;
+    }
 
-.a-progress .pgs-total .pgs-loading {
-    display: none;
-    box-shadow: #1affb2 0 5px 5px;
-    animation: loadingProgressBar 1200ms ease-out alternate infinite;
-}
+    .pgs-total .pgs-loading {
+        display: none;
+        box-shadow: #1affb2 0 5px 5px;
+        animation: loadingProgressBar 1200ms ease-out alternate infinite;
+    }
 
-.a-progress .pgs-total .pgs-play:before {
-    background-color: #42b680;
-    border-radius: 10px;
-    z-index: 1;
-}
+    .pgs-total .pgs-play:before {
+        background-color: #42b680;
+        border-radius: 10px;
+        z-index: 1;
+    }
 
-.a-progress .pgs-total .pgs-play {
-    height: 100%;
-    position: relative;
-    border-radius: 10px;
-}
+    .pgs-total .pgs-play {
+        height: 100%;
+        position: relative;
+        border-radius: 10px;
+    }
 
-.a-progress .pgs-total .pgs-play:after {
-    top: 4px;
-    left: 100%;
-    height: 8px;
-    width: 8px;
-    border-radius: 50%;
-    background-color: #FFFFFFFF;
+    .pgs-total .pgs-play:after {
+        top: 4px;
+        left: 100%;
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        background-color: #FFFFFFFF;
+    }
 }
 
 /* 下排控制按钮样式*/
@@ -369,7 +433,9 @@ body {
     width: 100%;
 }
 
+/* 将会移除 */
 .search {
+    display: none;
     position: absolute;
     padding: 10px;
     right: 0;
@@ -399,6 +465,25 @@ body {
     border: none;
 
     transition: 200ms ease-out;
+    transition-behavior: allow-discrete;
+}
+
+.search-bar {
+    &.show {
+        opacity: 1;
+        left: 8%;
+        width: 80%;
+        height: 50px;
+        pointer-events: initial;
+    }
+
+    &.hide {
+        opacity: 0;
+        left: 100%;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
 }
 
 .music-list-title {
@@ -429,10 +514,6 @@ body {
     list-style-type: none;
 }
 
-::-webkit-scrollbar {
-    display: none;
-}
-
 .all-list li {
     min-width: 80%;
     max-width: 80%;
@@ -457,17 +538,11 @@ body {
 }
 
 .list-card-show {
-    animation: showAni;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-    -webkit-animation-fill-mode: forwards;
+    animation: showAni 500ms forwards;
 }
 
 .list-card-hide {
-    animation: hideAni;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-    -webkit-animation-fill-mode: forwards;
+    animation: hideAni 500ms forwards;
 }
 
 @media (min-width: 767px) {
@@ -489,6 +564,10 @@ body {
 }
 
 @media (max-width: 767px) {
+    .mobile-lyric {
+        display: block;
+    }
+
     .lyric-box {
         font-size: 15px;
     }
@@ -593,4 +672,32 @@ body {
 
 #audio-player {
     display: none;
+}
+
+#audio-canvas {
+    bottom: 0;
+    background-color: transparent;
+    pointer-events: none;
+    position: absolute;
+}
+
+/* Overwrite */
+.base-input-style-2 {
+    width: 75%;
+    padding: 10px;
+}
+
+.base-button-style-2 {
+    margin: 0 0 0 5px;
+    width: 20%;
+    height: 40px;
+}
+
+.custom-input-label {
+    display: flex;
+}
+
+.base-file-input-label {
+    white-space: none;
+    width: 100%;
 }

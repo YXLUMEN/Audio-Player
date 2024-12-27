@@ -5,14 +5,80 @@
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="css/base-alert.css">
+    <link rel="stylesheet" href="css/base-style.css">
     <link rel="stylesheet" href="css/scroll.css">
-    <link rel="stylesheet" href="css/alert.css">
+    <link rel="stylesheet" href="css/more-selections.css">
     <link rel="stylesheet" href="css/audio_player.css">
     <title>Audio Player</title>
 </head>
 <body id="body">
 <div class="base-alert-box"></div>
+<div class="base-more-selections-container" id="unique-selections-container">
+    <div class="more-selections">
+        <div class="selection-item submenu-title">
+            频谱图设置
+        </div>
+        <div class="submenu-content">
+            <div class="selection-item base-switch">
+                <p>开启频谱图</p>
+                <label>
+                    <input type="checkbox" name="toggle-fft">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="selection-item set-column">
+                切换绘图模式
+                <label class="base-checkbox" style="margin-left:10px;">
+                    <input type="radio" name="draw-mode" value="bars" checked>柱状图
+                    <span class="checkmark"></span>
+                </label>
+                <label class="base-checkbox" style="margin-left:10px;">
+                    <input type="radio" name="draw-mode" value="lines">曲线图
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <div class="selection-item set-column">
+                分辨率设置
+                <label class="custom-input-label">
+                    <input type="text" name="change-fftSize" placeholder="默认值: 256(128)" class="base-input-style-2">
+                    <input type="button" name="change-fftSize-btn" value="确定" class="base-button-style-2">
+                </label>
+            </div>
+            <div class="selection-item set-column">
+                刷新频率设置
+                <label class="custom-input-label">
+                    <input type="text" name="change-draw-interval" placeholder="默认值: 10" class="base-input-style-2">
+                    <input type="button" name="change-draw-interval-btn" value="确定" class="base-button-style-2">
+                </label>
+            </div>
+            <div class="selection-item set-column">
+                最低分贝
+                <label class="custom-input-label">
+                    <input type="text" name="min-decibels" placeholder="默认值: -100" class="base-input-style-2">
+                    <input type="button" name="min-decibels-btn" value="确定" class="base-button-style-2">
+                </label>
+            </div>
+            <div class="selection-item set-column">
+                最高分贝
+                <label class="custom-input-label">
+                    <input type="text" name="max-decibels" placeholder="默认值: -10" class="base-input-style-2">
+                    <input type="button" name="max-decibels-btn" value="确定" class="base-button-style-2">
+                </label>
+            </div>
+        </div>
+        <div class="selection-item submenu-title">
+            播放本地音乐
+        </div>
+        <div class="selection-item submenu-content">
+            <label class="base-file-input-label" for="local-audio">选择文件</label>
+            <input type="file" id="local-audio" class="base-file-input">
+        </div>
+    </div>
+</div>
 <div class="upper-container">
+    <img id="mobile-lyric" class="mobile-lyric" src="/img/ico/lyric.svg" alt="" width="30">
+    <img id="more" class="more" src="/img/ico/more.svg" alt="" width="25">
     <!-- 音乐介绍 -->
     <div class="introduction-container">
         <div id="text-container" class="text-container" >
@@ -31,8 +97,9 @@
 
 <!-- 音乐播放器主要内容 -->
     <div class="audio-box">
-        <h3 id="lyric-title" class="lyric-title" style="opacity:0;"></h3>
-        <div id="lyric-box" class="lyric-box" style="opacity:0;pointer-events:none;">
+        <canvas id="audio-canvas"></canvas>
+        <h3 id="lyric-title" class="lyric-title hide"></h3>
+        <div id="lyric-box" class="lyric-box hide">
             <div class="lyric-calibration">
                 <img src="img/ico/up.svg" alt="-0.1" width="20">
                 <img src="img/ico/deletion.svg" alt="" width="20">
@@ -94,7 +161,7 @@
             <label>
                 <input
                         id="search-input" class="search-bar"
-                        type="search" placeholder="搜索 曲名,作曲家,专辑" style="opacity:0">
+                        type="search" placeholder="搜索 曲名,作曲家,专辑">
             </label>
             <div class="music-list-title">播放队列</div>
             <hr class="line">
